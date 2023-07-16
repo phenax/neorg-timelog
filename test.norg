@@ -1,9 +1,11 @@
 * Hello world
-  @timelogs routine
-  hello world
-  hello world
+  @timelog routine
+  - 2023-07-16, 15:07:13
+  - 2023-07-16, 15:12:34
   @end
 
-  @timelogs other
-  - 2023-07-16 14:33
-  @end
+** Other title
+   @timelog other
+   - 2023-07-16, 15:08:50
+   - 2023-07-16, 15:12:40
+   @end

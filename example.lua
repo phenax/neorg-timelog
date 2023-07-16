@@ -12,6 +12,8 @@ add_rtp('telescope.nvim')
 
 ---
 
+vim.cmd [[ e ./test.norg ]]
+
 vim.cmd [[ set filetype=norg ]]
 
 require('neorg').setup {
@@ -21,4 +23,4 @@ require('neorg').setup {
   },
 }
 
-vim.cmd [[ Neorg insert-log routine ]]
+-- vim.cmd [[Neorg insert-log routine]]
