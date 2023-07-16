@@ -7,28 +7,26 @@ local EVENT_INSERT = namespace .. 'insert'
 
 local module = neorg.modules.create(namespace)
 
-module.setup = function ()
+module.config.public = {
+  time_format = '%Y-%m-%d %H:%M:%S',
+}
+
+module.setup = function()
   return {
     requires = {
       'core.neorgcmd',
       -- 'core.tempus',
-    }
+    },
   }
 end
 
-module.config.public = {
-  timeFormat = '- %Y-%m-%d, %H:%M:%S'
-}
-
-function module.load()
-  print("Module loaded")
-
+module.load = function()
   module.required['core.neorgcmd'].add_commands_from_table({
-    ['insert-log'] = {
+    ['insert-timelog'] = {
       args = 1,
       condition = 'norg',
-      name = EVENT_INSERT
-    }
+      name = EVENT_INSERT,
+    },
   })
 end
 
@@ -36,41 +34,44 @@ local query = vim.treesitter.query.parse("norg", [[
   (ranged_verbatim_tag
     name:(tag_name (word)@_tag (#eq? @_tag "timelog"))
     (tag_parameters (tag_param)@timelog-name)
+    content: (ranged_verbatim_tag_content)? @timelog-content
     (ranged_verbatim_tag_end)@timelog-end
   ) @timelog-tag
 ]])
 
 module.private = {
-  insert_time = function(matchName)
+  insert_time = function(match_name)
     local bufnr = vim.fn.bufnr('%')
     local root = utils.get_root_node(bufnr, vim.opt.ft:get())
 
-    for _pattern, match, metadata in query:iter_matches(root, bufnr, 0, -1) do
-      local timelogName = ""
-      local timelogNode = nil
+    for _pat, match, _meta in query:iter_matches(root, bufnr, 0, -1) do
+      local timelog_name = ""
+      local timelog_node = nil
 
       for id, node in pairs(match) do
         local captureName = query.captures[id]
         local node = match[id]
         if captureName == "timelog-name" then
-          timelogName = vim.treesitter.get_node_text(node, bufnr)
+          timelog_name = vim.treesitter.get_node_text(node, bufnr)
         elseif captureName == "timelog-end" then
-          timelogNode = node
+          timelog_node = node
         end
       end
 
-      if matchName == "*" or timelogName == matchName then
-        local row, col, _ = timelogNode:start()
+      if match_name == "*" or timelog_name == match_name then
+        local row, col, _ = timelog_node:start()
         local indent = string.rep(" ", col)
-        local text = os.date(module.config.public.timeFormat, os.time())
+        local text = os.date("- " .. module.config.public.time_format, os.time())
         vim.api.nvim_buf_set_text(bufnr, row, col, row, col, { text, indent })
       end
     end
   end,
 }
 
-module.on_event = function (event)
-  if event.split_type[2] == EVENT_INSERT then
+module.on_event = function(event)
+  local event_name = event.split_type[2]
+
+  if event_name == EVENT_INSERT then
     local name = event.content[1]
     module.private.insert_time(name)
   end

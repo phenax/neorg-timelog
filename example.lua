@@ -8,13 +8,8 @@ vim.o.runtimepath = vim.o.runtimepath .. ',' .. '~/dev/projects/nvim-neorg-timel
 add_rtp('plenary.nvim')
 add_rtp('nvim-treesitter')
 add_rtp('neorg')
-add_rtp('telescope.nvim')
 
 ---
-
-vim.cmd [[ e ./test.norg ]]
-
-vim.cmd [[ set filetype=norg ]]
 
 require('neorg').setup {
   load = {
@@ -23,4 +18,7 @@ require('neorg').setup {
   },
 }
 
--- vim.cmd [[Neorg insert-log routine]]
+vim.cmd [[ e ./test.norg ]]
+vim.cmd [[ set filetype=norg ]]
+
+-- vim.cmd [[Neorg insert-timelog routine]]
