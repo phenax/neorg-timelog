@@ -20,7 +20,7 @@ require('neorg').setup {
   },
 }
 
-vim.cmd [[ e ./test.norg ]]
+vim.cmd [[ e ./example.norg ]]
 vim.cmd [[ set filetype=norg ]]
 
 -- vim.cmd [[Neorg insert-timelog routine]]
