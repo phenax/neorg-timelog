@@ -3,7 +3,7 @@ require('neorg.modules.base')
 local utils = require('neorg.modules.external.timelog.utils')
 
 local namespace = 'external.timelog'
-local EVENT_INSERT = namespace .. 'insert'
+local EVENT_INSERT_LOG = namespace .. 'insert-log'
 
 local module = neorg.modules.create(namespace)
 
@@ -13,6 +13,7 @@ module.config.public = {
 
 module.setup = function()
   return {
+    success = true,
     requires = {
       'core.neorgcmd',
       -- 'core.tempus',
@@ -25,7 +26,7 @@ module.load = function()
     ['insert-timelog'] = {
       args = 1,
       condition = 'norg',
-      name = EVENT_INSERT,
+      name = EVENT_INSERT_LOG,
     },
   })
 end
@@ -40,9 +41,8 @@ local query = vim.treesitter.query.parse("norg", [[
 ]])
 
 module.private = {
-  insert_time = function(match_name)
-    local bufnr = vim.fn.bufnr('%')
-    local root = utils.get_root_node(bufnr, vim.opt.ft:get())
+  insert_time = function(match_name, bufnr)
+    local root = utils.get_root_node(bufnr, "norg")
 
     for _pat, match, _meta in query:iter_matches(root, bufnr, 0, -1) do
       local timelog_name = ""
@@ -70,16 +70,17 @@ module.private = {
 
 module.on_event = function(event)
   local event_name = event.split_type[2]
+  local bufnr = event.buffer
 
-  if event_name == EVENT_INSERT then
+  if event_name == EVENT_INSERT_LOG then
     local name = event.content[1]
-    module.private.insert_time(name)
+    module.private.insert_time(name, bufnr)
   end
 end
 
 module.events.subscribed = {
   ['core.neorgcmd'] = {
-    [EVENT_INSERT] = true
+    [EVENT_INSERT_LOG] = true
   }
 }
 

@@ -17,7 +17,7 @@ Neorg module to allow logging time
 ```
 
 
-#### Config -
+#### Config
 ```lua
 require('neorg').setup {
   load = {
@@ -35,9 +35,9 @@ require('neorg').setup {
 ## Usage
 * Add an empty `@timelog` data tag with a name
 ```neorg
-@timelog study
+@timelog routine
 @end
 ```
-* Run `:Neorg insert-timelog study` to update timelog with the name `study`
+* Run `:Neorg insert-timelog routine` to update timelog with the name `routine`
 * Run `:Neorg insert-timelog *` to update all timelogs in buffer
 
