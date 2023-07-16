@@ -1,8 +1,8 @@
 require('neorg.modules.base')
 
-local utils = require('neorg.modules.external.timelogs.utils')
+local utils = require('neorg.modules.external.timelog.utils')
 
-local namespace = 'external.timelogs'
+local namespace = 'external.timelog'
 local EVENT_INSERT = namespace .. 'insert'
 
 local module = neorg.modules.create(namespace)

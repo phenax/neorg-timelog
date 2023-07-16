@@ -1,3 +1,3 @@
-# nvim-neorg-timelogs
+# neorg-timelog
 Neorg module to allow logging time
 
