@@ -24,15 +24,20 @@ end
 
 module.load = function()
   module.required['core.neorgcmd'].add_commands_from_table({
-    ['insert-timelog'] = {
+    ['timelog'] = {
       args = 1,
       condition = 'norg',
-      name = EVENT_INSERT_LOG,
-    },
-    ['export-timelog'] = {
-      args = 1,
-      condition = 'norg',
-      name = EVENT_EXPORT,
+
+      subcommands = {
+        insert = {
+          args = 1,
+          name = EVENT_INSERT_LOG,
+        },
+        export = {
+          args = 1,
+          name = EVENT_EXPORT,
+        },
+      },
     },
   })
 end

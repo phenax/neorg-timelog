@@ -38,6 +38,7 @@ require('neorg').setup {
 @timelog routine
 @end
 ```
-* Run `:Neorg insert-timelog routine` to update timelog with the name `routine`
-* Run `:Neorg insert-timelog *` to update all timelogs in buffer
+* Run `:Neorg timelog insert routine` to update timelog with the name `routine`
+* Run `:Neorg timelog insert *` to update all timelogs in buffer
+* Run `:Neorg timelog export ./log.json` to export all timelogs from current buffer
 
