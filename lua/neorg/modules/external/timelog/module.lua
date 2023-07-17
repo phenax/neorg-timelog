@@ -74,15 +74,15 @@ module.private = {
   end,
 
   export_logs = function(bufnr, outfile)
-    local data = module.public.get_all_timelogs(bufnr)
+    local data = module.public.get_all_logs(bufnr)
     local json_str = vim.json.encode(data)
-    print(json_str)
-    -- TODO: Save somewhere?
+    local fd = vim.loop.fs_open(outfile, "w", 438)
+    vim.loop.fs_write(fd, json_str)
   end,
 }
 
 module.public = {
-  get_all_timelogs = function(bufnr)
+  get_all_logs = function(bufnr)
     local root = utils.get_root_node(bufnr, "norg")
 
     local result = {}
