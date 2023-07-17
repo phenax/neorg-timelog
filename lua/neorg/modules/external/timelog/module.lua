@@ -106,7 +106,7 @@ module.public = {
     local result = {}
 
     module.private.foreach_timelog(bufnr, function(l)
-      local items = split_string(l.contents, "\n")
+      local items = utils.split_string(l.contents, "\n")
       for i, item in ipairs(items) do
         items[i] = item:match( "^%s*(.-)%s*$" ) -- Trim whitespace
       end
@@ -117,15 +117,6 @@ module.public = {
     return result
   end,
 }
-
-function split_string(input, sep)
-  local result = {}
-  local pattern = "([^" .. sep .. "]+)"
-  for substring in string.gmatch(input, pattern) do
-    table.insert(result, substring)
-  end
-  return result
-end
 
 module.on_event = function(event)
   local event_name = event.split_type[2]
