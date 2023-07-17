@@ -11,7 +11,7 @@ Neorg module to allow logging time
     -- ...
     requires = {
       -- ...
-      'phenax/neorg-timelog',
+      {'phenax/neorg-timelog'},
     }
   }
 ```
