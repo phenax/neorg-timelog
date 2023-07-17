@@ -52,30 +52,45 @@ local query = vim.treesitter.query.parse("norg", [[
 ]])
 
 module.private = {
-  insert_time = function(bufnr, match_name)
+  foreach_timelog = function(bufnr, callback)
     local root = utils.get_root_node(bufnr, "norg")
 
     for _pat, match, _meta in query:iter_matches(root, bufnr, 0, -1) do
       local timelog_name = ""
-      local timelog_node = nil
+      local timelog_contents = ""
+      local timelog_end_node = nil
 
       for id, node in pairs(match) do
         local captureName = query.captures[id]
         local node = match[id]
         if captureName == "timelog-name" then
           timelog_name = vim.treesitter.get_node_text(node, bufnr)
+        elseif captureName == "timelog-content" then
+          timelog_contents = vim.treesitter.get_node_text(node, bufnr)
         elseif captureName == "timelog-end" then
-          timelog_node = node
+          timelog_end_node = node
         end
       end
 
-      if match_name == "*" or timelog_name == match_name then
-        local row, col, _ = timelog_node:start()
+      callback({
+        name = timelog_name,
+        contents = timelog_contents,
+        end_node = timelog_end_node,
+      })
+    end
+  end,
+
+  insert_time = function(bufnr, match_name)
+    module.private.foreach_timelog(bufnr, function(l)
+      if match_name == "*" or l.name == match_name then
+        local row, col, _ = l.end_node:start()
+
         local indent = string.rep(" ", col)
         local text = os.date(module.config.public.time_format, os.time())
+
         vim.api.nvim_buf_set_text(bufnr, row, col, row, col, { text, indent })
       end
-    end
+    end)
   end,
 
   export_logs = function(bufnr, outfile)
@@ -88,31 +103,16 @@ module.private = {
 
 module.public = {
   get_all_logs = function(bufnr)
-    local root = utils.get_root_node(bufnr, "norg")
-
     local result = {}
 
-    for _pat, match, _meta in query:iter_matches(root, bufnr, 0, -1) do
-      local timelog_name = ""
-      local timelog_contents = ""
-
-      for id, node in pairs(match) do
-        local captureName = query.captures[id]
-        local node = match[id]
-        if captureName == "timelog-name" then
-          timelog_name = vim.treesitter.get_node_text(node, bufnr)
-        elseif captureName == "timelog-content" then
-          local text = vim.treesitter.get_node_text(node, bufnr)
-          timelog_contents = text
-        end
-      end
-
-      local items = split_string(timelog_contents, "\n")
+    module.private.foreach_timelog(bufnr, function(l)
+      local items = split_string(l.contents, "\n")
       for i, item in ipairs(items) do
         items[i] = item:match( "^%s*(.-)%s*$" ) -- Trim whitespace
       end
-      result[timelog_name] = items
-    end
+
+      result[l.name] = items
+    end)
 
     return result
   end,
